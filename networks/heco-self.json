@@ -1,0 +1,80 @@
+{
+    "admin": "0x41Ef4a5902762050FB3ACE4EB9108D106AFf4606",
+    "invister": "0xBde6242C6b74118F0a00CD9Be426d70Bc4D77dE7",
+    "invisterRewardDelay": "15724800",
+    "invisterRewardAmount": "250000000000000000000000",
+    "greylistEscrow": "0xBde6242C6b74118F0a00CD9Be426d70Bc4D77dE7",
+    "dever":"0xBde6242C6b74118F0a00CD9Be426d70Bc4D77dE7",
+    "startBlock": "10000",
+    "seedPerBlock": "1000000000000000000",
+    "boundsSeedPerBlocks": [
+        "4000000000000000000", 
+        "3000000000000000000",
+        "2000000000000000000",
+        "1000000000000000000"
+    ],
+    "tokens": [
+        {
+            "symbol":"HT",
+            "contract":"0x5DcbAc8c7482A51EbE8dc4E4488E754E750049Cd",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1"
+        },
+        {
+            "symbol":"HPT",
+            "contract":"0x843f945C8CeC867dFd75b1EE9ab8D2b80a9180C0",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1"
+        },
+        {
+            "symbol":"USDT",
+            "contract":"0x6908f35a6cCC5b921205Af3195DD91Ab8766E786",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1"
+        },
+        {
+            "symbol":"HUSD",
+            "contract":"0x7d035DF48e49D0B3a5dB6aAc5C49805Ab395eDF2",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1"
+        },
+        {
+            "symbol":"HBTC",
+            "contract":"0xccbd7fB0a0A8716F4e988543fEe3a1c8bA0E522F",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1"
+        },
+        {
+            "symbol":"ETH",
+            "contract":"0xCBB5c25c503094AFDFB1b0f69Cf0E77e10719003",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1"
+        }
+    ],
+    "rewardPool" : {
+        "duration" : 3
+    },
+    "pools": [
+        {
+            "name":"SEED-HUSD",
+            "allocPoint" : "1",
+            "address" : "0x27C5E98437E2f7eb74ab7FFE9c1fC185ef8bf805"
+        },
+        {
+            "name":"SEED-USDT",
+            "allocPoint" : "1",
+            "address" : "0x04445aCCc1871752Fe3e2adefEB1C06E7059C85A"
+        },
+        {
+            "name":"SEED-HT",
+            "allocPoint" : "1",
+            "address" : "0xA500E1Be0f174C8d02e14f2242aA50549Ca63f70"
+        }
+    ]
+}
