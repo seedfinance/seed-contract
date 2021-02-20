@@ -2,7 +2,7 @@ pragma solidity 0.5.16;
 
 interface IStrategyV2 {
 
-    function unsalvagableTokens(address tokens) external view returns (bool);
+    // function unsalvagableTokens(address tokens) external view returns (bool);
 
     function governance() external view returns (address);
     function controller() external view returns (address);

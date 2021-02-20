@@ -55,8 +55,8 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     require(_toInvestDenominator != 0, "cannot divide by 0");
 
     ERC20Detailed.initialize(
-      string(abi.encodePacked("FARM_", ERC20Detailed(_underlying).symbol())),
-      string(abi.encodePacked("f", ERC20Detailed(_underlying).symbol())),
+      string(abi.encodePacked("SEED_", ERC20Detailed(_underlying).symbol())),
+      string(abi.encodePacked("s", ERC20Detailed(_underlying).symbol())),
       ERC20Detailed(_underlying).decimals()
     );
     ControllableInit.initialize(
@@ -208,7 +208,7 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     _setFutureStrategy(address(0));
   }
 
-  function setSeedPool(address _seedPool) public onlyControllerOrGovernance {
+  function setSeedPoolAddress(address _seedPool) public onlyControllerOrGovernance {
     _setSeedPoolAddress(_seedPool);
   }
 
@@ -290,11 +290,11 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
   function deposit(uint256 amount) external defense {
     _deposit(amount, msg.sender, msg.sender);
     //自动锁仓
-    if (_seedPoolAddress() != address(0) && _seedPoolId() != 0) {
+    if (_seedPoolAddress() != address(0)) {
         uint256 balance = balanceOf(msg.sender);
         approve(_seedPoolAddress(), 0);
         approve(_seedPoolAddress(), balance);
-        ISeedPool(_seedPoolAddress()).depositFor(_seedPoolId(), balance);
+        ISeedPool(_seedPoolAddress()).depositFor(_seedPoolId(), msg.sender, balance);
     }
   }
 
@@ -315,6 +315,9 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     require(totalSupply() > 0, "Vault has no shares");
     require(numberOfShares > 0, "numberOfShares must be greater than 0");
     uint256 totalShareSupply = totalSupply();
+    if (_seedPoolAddress() != address(0)) {
+        ISeedPool(_seedPoolAddress()).withdrawFor(_seedPoolId(), msg.sender, numberOfShares);
+    }
     _burn(msg.sender, numberOfShares);
 
     uint256 calculatedSharePrice = getPricePerFullShare();

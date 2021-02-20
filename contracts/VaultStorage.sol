@@ -17,8 +17,8 @@ contract VaultStorage is Initializable {
   bytes32 internal constant _STRATEGY_UPDATE_TIME_SLOT = 0x56e7c0e75875c6497f0de657009613a32558904b5c10771a825cc330feff7e72;
   bytes32 internal constant _ALLOW_SHARE_PRICE_DECREASE_SLOT = 0x22f7033891e85fc76735ebd320e0d3f546da431c4729c2f6d2613b11923aaaed;
   bytes32 internal constant _WITHDRAW_BEFORE_REINVESTING_SLOT = 0x4215fbb95dc0890d3e1660fb9089350f2d3f350c0a756934874cae6febf42a79;
-  bytes32 internal constant _SEED_POOL_ADDRESS_SLOT = 0x4215fbb95dc0890d3e1660fb9089350f2d3f350c0a756934874cae6febf42a79;
-  bytes32 internal constant _SEED_POOL_ID_SLOT = 0x4215fbb95dc0890d3e1660fb9089350f2d3f350c0a756934874cae6febf42a79;
+  bytes32 internal constant _SEED_POOL_ADDRESS_SLOT = 0xe6c3a0c4f4759de49e66aabc16297148917b8eb1e9e439560594ca0bf9eef916;
+  bytes32 internal constant _SEED_POOL_ID_SLOT = 0x7798d9eaf8097cab5eab9cb3ef59b9a697144fd6db137bc0282ee9ef317e2c84;
 
   constructor() public {
     assert(_STRATEGY_SLOT == bytes32(uint256(keccak256("eip1967.vaultStorage.strategy")) - 1));

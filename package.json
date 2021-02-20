@@ -31,6 +31,7 @@
     "dotenv": "^8.2.0",
     "ganache-cli": "^6.10.1",
     "solidity-coverage": "0.7.0",
+    "string-format": "^2.0.0",
     "truffle": "5.1.31",
     "truffle-flattener": "^1.4.4"
   },

@@ -1,17 +1,17 @@
 {
     "admin": "0x41Ef4a5902762050FB3ACE4EB9108D106AFf4606",
-    "invister": "0xBde6242C6b74118F0a00CD9Be426d70Bc4D77dE7",
-    "invisterRewardDelay": "15724800",
-    "invisterRewardAmount": "250000000000000000000000",
-    "greylistEscrow": "0xBde6242C6b74118F0a00CD9Be426d70Bc4D77dE7",
-    "dever":"0xBde6242C6b74118F0a00CD9Be426d70Bc4D77dE7",
-    "startBlock": "10000",
-    "seedPerBlock": "1000000000000000000",
+    "invister": "0xb1690Af1CAc29d4b098F473D4121F43cB52eF749",
+    "dever":"0xd96b5B7fE4E8Ba829Ff52e5f474fD34C3348A590",
+    "greylistEscrow": "0x2163aa3674Ae086F38Bd0bA89a41Ad41AAF046E6",
+    "startBlock": 10000,
+    "seedPerBlock": "153030753968253968",
+    "delaySeconds": 86400,
+    "bonusBlockCycle": 201600,
     "boundsSeedPerBlocks": [
-        "4000000000000000000", 
-        "3000000000000000000",
-        "2000000000000000000",
-        "1000000000000000000"
+        "318878968253968253",
+        "248015873015873015",
+        "198412698412698412",
+        "162981150793650793"
     ],
     "tokens": [
         {
@@ -76,5 +76,6 @@
             "allocPoint" : "1",
             "address" : "0xA500E1Be0f174C8d02e14f2242aA50549Ca63f70"
         }
-    ]
+    ],
+    "mdex" : "0x04445aCCc1871752Fe3e2adefEB1C06E7059C85A"
 }

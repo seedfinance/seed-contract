@@ -36,7 +36,7 @@ contract AutoStake is Controllable {
   }
 
   function setGreylistEscrow(address _greylistEscrow) external onlyGovernance {
-    require(_greylistEscrow == address(0), "escrow cannot be empty address");
+    require(_greylistEscrow != address(0), "escrow cannot be empty address");
     greylistEscrow = _greylistEscrow;
   }
 

@@ -43,14 +43,11 @@ contract SeedPool is Ownable {
     address public devaddr;
     // investor address.
     address public investoraddr;
-    // Block number when bonus SEED period ends.
-    uint256 public bonusEndBlock;
     // SEED tokens created per block.
     uint256 public seedPerBlock;
 
     uint256[] public bonusSeedPerBlocks;
-
-    uint256 public constant bonusCycleBlock = 3360;
+    uint256[] public bonusBlockCycle;
 
     // Info of each pool.
     PoolInfo[] public poolInfo;
@@ -65,18 +62,25 @@ contract SeedPool is Ownable {
     event Withdraw(address indexed user, uint256 indexed pid, uint256 amount);
     event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
 
+    modifier onlyLpToken(uint256 pid) {
+        require(address(poolInfo[pid].lpToken) == msg.sender, "Only LpToken Can Call");
+        _;
+    }
+
     constructor(
         RewardToken _seed,
         address _devaddr,
         address _investoraddr,
         uint256 _seedPerBlock,
         uint256 _startBlock,
+        uint256[] memory _bonusBlockCycle,
         uint256[] memory _bonusSeedPerBlocks
     ) public {
         seed = _seed;
         devaddr = _devaddr;
         investoraddr = _investoraddr;
         seedPerBlock = _seedPerBlock;
+        bonusBlockCycle = _bonusBlockCycle;
         bonusSeedPerBlocks = _bonusSeedPerBlocks;
         startBlock = _startBlock;
     }
@@ -85,17 +89,32 @@ contract SeedPool is Ownable {
         return poolInfo.length;
     }
 
-    function getseedPerBlock() public view returns (uint256) {
-        uint256 i = block.number.sub(startBlock).div(bonusCycleBlock);
-        if (i >= bonusSeedPerBlocks.length) {
-            return seedPerBlock;
+    function getRewardDuration(uint256 _from, uint256 _to) public view returns (uint256 amount) {
+
+        if (_to < startBlock) {
+            return 0;
         }
-        return bonusSeedPerBlocks[i];
+        uint256 _ifrom = _from < startBlock ? startBlock : _from;
+        for (uint256 i = 0; i < bonusBlockCycle.length; i++) {
+            if (_ifrom >= bonusBlockCycle[i]) {
+                continue;
+            }
+            // _from in this context
+            if (_to < bonusBlockCycle[i]) {
+                return amount.add(_to.sub(_ifrom).mul(bonusSeedPerBlocks[i]));
+            }
+            amount = amount.add(bonusBlockCycle[i].sub(_ifrom).mul(bonusSeedPerBlocks[i]));
+            _ifrom = bonusBlockCycle[i];
+        }
+        if (_to >= bonusBlockCycle[bonusBlockCycle.length - 1]) {
+            amount = amount.add(_to.sub(_ifrom).mul(seedPerBlock));
+        }
     }
 
     // Add a new lp to the pool. Can only be called by the owner.
     // XXX DO NOT add the same LP token more than once. Rewards will be messed up if you do.
     function add(uint256 _allocPoint, IERC20 _lpToken, bool _withUpdate) public onlyOwner {
+        require(address(_lpToken) != address(0), "lptoken not set");
         if (_withUpdate) {
             massUpdatePools();
         }
@@ -125,7 +144,8 @@ contract SeedPool is Ownable {
         uint256 accSeedPerShare = pool.accSeedPerShare;
         uint256 lpSupply = pool.lpToken.balanceOf(address(this));
         if (block.number > pool.lastRewardBlock && lpSupply != 0 && seed.totalSupply() < seed.cap()) {
-            uint256 seedReward = getseedPerBlock().mul(pool.allocPoint).div(totalAllocPoint);
+            uint256 seedReward = getRewardDuration(pool.lastRewardBlock, block.number).mul(pool.allocPoint).div(totalAllocPoint);
+            seedReward = seedReward.mul(7000).div(10000);
             accSeedPerShare = accSeedPerShare.add(seedReward.mul(1e12).div(lpSupply));
         }
         return user.amount.mul(accSeedPerShare).div(1e12).sub(user.rewardDebt);
@@ -153,18 +173,19 @@ contract SeedPool is Ownable {
 
         // mint if seed not caps
         if (seed.totalSupply() < seed.cap()) {
-            uint256 seedReward = getseedPerBlock().mul(pool.allocPoint).div(totalAllocPoint);
+            uint256 seedReward = getRewardDuration(pool.lastRewardBlock, block.number).mul(pool.allocPoint).div(totalAllocPoint);
             if (seed.totalSupply().add(seedReward) > seed.cap()) {
                 seedReward = seed.cap().sub(seed.totalSupply());
             }
             uint256 devseed = seedReward.mul(1000).div(10000);
             uint256 investorseed = seedReward.mul(2000).div(10000);
+            uint256 poolReward = seedReward.sub(devseed).sub(investorseed);
 
             seed.mint(devaddr, devseed);
             seed.mint(investoraddr, investorseed);
-            seed.mint(address(this), seedReward.sub(devseed).sub(investorseed));
+            seed.mint(address(this), poolReward);
 
-            pool.accSeedPerShare = pool.accSeedPerShare.add(seedReward.mul(1e12).div(lpSupply));
+            pool.accSeedPerShare = pool.accSeedPerShare.add(poolReward.mul(1e12).div(lpSupply));
         }
         pool.lastRewardBlock = block.number;
     }
@@ -189,22 +210,22 @@ contract SeedPool is Ownable {
     }
 
     // Deposit LP tokens to MasterChef for SEED allocation.
-    function depositFor(uint256 _pid, uint256 _amount) public {
+    function depositFor(uint256 _pid, address _user, uint256 _amount) public onlyLpToken(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
-        UserInfo storage user = userInfo[_pid][tx.origin];
+        UserInfo storage user = userInfo[_pid][_user];
         updatePool(_pid);
         if (user.amount > 0) {
             uint256 pending = user.amount.mul(pool.accSeedPerShare).div(1e12).sub(user.rewardDebt);
             if(pending > 0) {
-                safeSeedTransfer(tx.origin, pending);
+                safeSeedTransfer(_user, pending);
             }
         }
         if(_amount > 0) {
-            pool.lpToken.safeTransferFrom(tx.origin, address(this), _amount);
+            pool.lpToken.safeTransferFrom(_user, address(this), _amount);
             user.amount = user.amount.add(_amount);
         }
         user.rewardDebt = user.amount.mul(pool.accSeedPerShare).div(1e12);
-        emit Deposit(tx.origin, _pid, _amount);
+        emit Deposit(_user, _pid, _amount);
     }
 
     // Withdraw LP tokens from MasterChef.
@@ -223,6 +244,24 @@ contract SeedPool is Ownable {
         }
         user.rewardDebt = user.amount.mul(pool.accSeedPerShare).div(1e12);
         emit Withdraw(msg.sender, _pid, _amount);
+    }
+
+    // Withdraw LP tokens from MasterChef.
+    function withdrawFor(uint256 _pid, address _user, uint256 _amount) public onlyLpToken(_pid) {
+        PoolInfo storage pool = poolInfo[_pid];
+        UserInfo storage user = userInfo[_pid][_user];
+        require(user.amount >= _amount, "withdraw: not good");
+        updatePool(_pid);
+        uint256 pending = user.amount.mul(pool.accSeedPerShare).div(1e12).sub(user.rewardDebt);
+        if(pending > 0) {
+            safeSeedTransfer(_user, pending);
+        }
+        if(_amount > 0) {
+            user.amount = user.amount.sub(_amount);
+            pool.lpToken.safeTransfer(address(_user), _amount);
+        }
+        user.rewardDebt = user.amount.mul(pool.accSeedPerShare).div(1e12);
+        emit Withdraw(_user, _pid, _amount);
     }
 
     // Withdraw without caring about rewards. EMERGENCY ONLY.
