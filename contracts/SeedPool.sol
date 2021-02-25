@@ -76,6 +76,7 @@ contract SeedPool is Ownable {
         uint256[] memory _bonusBlockCycle,
         uint256[] memory _bonusSeedPerBlocks
     ) public {
+        require(_bonusBlockCycle.length == _bonusSeedPerBlocks.length, "Unequal length");
         seed = _seed;
         devaddr = _devaddr;
         investoraddr = _investoraddr;

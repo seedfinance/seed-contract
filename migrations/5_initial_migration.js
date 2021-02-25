@@ -50,7 +50,7 @@ module.exports = async function(deployer) {
             return vaults[token.symbol]['vault'].setSeedPoolId(i, {from: network.admin});
         }).then(function(res) {
             console.dir("setSeedPoolId finish");
-            return deployer.deploy(SeedFinanceStrategy, process.env.CONTRACT_STORAGE, vaults[token.symbol]['vault'].address, network.dever, token.contract, network.mdex)
+            return deployer.deploy(SeedFinanceStrategy, process.env.CONTRACT_STORAGE, vaults[token.symbol]['vault'].address, network.dever)
         }).then(function(res) {
             vaults[token.symbol]['strategy'] = res;
             return controller.addVaultAndStrategy(vaults[token.symbol]['vault'].address, vaults[token.symbol]['strategy'].address, {from: network.admin});

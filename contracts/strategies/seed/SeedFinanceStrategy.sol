@@ -1,11 +1,11 @@
 pragma solidity 0.5.16;
 
-import "@openzeppelin/contracts/math/Math.sol";
+// import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
+// import "@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
-import "../../Controllable.sol";
+// import "../../Controllable.sol";
 import "../../hardworkInterface/IStrategyV2.sol";
 import "../RewardTokenProfitNotifier.sol";
 import "../../hardworkInterface/IVault.sol";
@@ -33,7 +33,9 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
         uint256 percent; //percent 1e12
         uint256 amount;
         MarketType marketType;
-        bool paused;
+        bool investPaused;
+        bool claimPaused;
+        bool withdrawPaused;
     }
 
     Market[] public market;
@@ -59,12 +61,11 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
     constructor(
         address _storage,
         address _vault,
-        address _devaddr,
-        address _valutUnderlying
+        address _devaddr
     ) public RewardTokenProfitNotifier(_storage) {
-        valutUnderlying = IERC20(_valutUnderlying);
         vault = _vault;
         devaddr = _devaddr;
+        valutUnderlying = IERC20(IVault(_vault).underlying());
     }
 
     function underlying() external view returns (address) {
@@ -81,7 +82,7 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
     function investAllUnderlying() public restricted {
         uint256 balance = valutUnderlying.balanceOf(address(this));
         for (uint256 i = 0; i < market.length; i++) {
-            if (market[i].paused) {
+            if (market[i].investPaused) {
                 continue;
             }
             uint256 singleBalance = balance.mul(market[i].percent).div(1e12);
@@ -150,6 +151,9 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
      */
     function withdrawAll() internal {
         for (uint256 i = 0; i < market.length; i++) {
+            if (market[i].withdrawPaused) {
+                continue;
+            }
             uint256 oldBalance = valutUnderlying.balanceOf(address(this)).add(market[i].amount);
             if (market[i].marketType == MarketType.Swap) {
                 uint256 pid =
@@ -221,6 +225,9 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
 
     function claim() internal {
         for (uint256 i = 0; i < market.length; i++) {
+            if (market[i].claimPaused) {
+                continue;
+            }
             if (market[i].marketType == MarketType.Swap) {
                 uint256 pid =
                     IMasterChefHeco(market[i].investRouter).LpOfPid(
@@ -329,10 +336,20 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
                 amount: 0,
                 percent: _percent,
                 marketType: MarketType(_type),
-                paused: false
+                investPaused: false,
+                withdrawPaused: false,
+                claimPaused: false
             })
         );
         marketId[_underlying] = market.length - 1;
+    }
+
+    function removeMarket(uint256 _mid) public onlyGovernance {
+        require(_mid < market.length, "mid out of range");
+        delete marketId[address(market[_mid].underlying)];
+        market[_mid] = market[market.length - 1];
+        marketId[address(market[_mid].underlying)] = _mid;
+        delete market[market.length - 1];
     }
 
     function setMarketPercent(uint256 _pid, uint256 _percent) public onlyOwner {
@@ -340,12 +357,21 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
         market[_pid].percent = _percent;
     }
 
-    function setMarketPaused(uint256 _pid, bool state) public onlyOwner {
+    function setMarketInvestPaused(uint256 _pid, bool state) public onlyOwner {
         require(_pid < market.length, "id out of range");
-        market[_pid].paused = state;
+        market[_pid].investPaused = state;
     }
 
-    function updateDevAddr(address _newAddress) public onlyOwner {
+    function setMarketWithdrawPaused(uint256 _pid, bool state) public onlyOwner {
+        require(_pid < market.length, "id out of range");
+        market[_pid].withdrawPaused = state;
+    }
+
+    function setMarketClaimPaused(uint256 _pid, bool state) public onlyOwner {
+        require(_pid < market.length, "id out of range");
+        market[_pid].claimPaused = state;
+    }
+    function updateDevAddr(address _newAddress) public onlyGovernance {
         require(_newAddress != address(0), "address is unvalid");
         devaddr = _newAddress;
     }
