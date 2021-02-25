@@ -53,61 +53,19 @@ module.exports = async function(deployer) {
             return deployer.deploy(SeedFinanceStrategy, process.env.CONTRACT_STORAGE, vaults[token.symbol]['vault'].address, network.dever)
         }).then(function(res) {
             vaults[token.symbol]['strategy'] = res;
+            return res.setLiquidation(true);
+        }).then(function(res) {
+            console.dir("setLiquidation finish");
+            console.dir(res);
+            return vaults[token.symbol]['strategy'].addMarket('0x843f945C8CeC867dFd75b1EE9ab8D2b80a9180C0', '0xEa4038d164e853B7facb95505F52734A7C4fb5d8', '0xfCDfFFaa5e12673c1570f1565F6D430307b8d7C5', '1000000000000', 3);
+        }).then(function(res) {
+            console.dir("addMarket finish");
+            console.dir(res);
             return controller.addVaultAndStrategy(vaults[token.symbol]['vault'].address, vaults[token.symbol]['strategy'].address, {from: network.admin});
         }).then(function(res) {
             console.dir("addVaultAndStrategy finish");
             console.dir(res);
         });
     }
-    //最后部署Timelock
-    let timelock = null;
-    await deployer.deploy(Timelock, network.admin, network.delaySeconds).then(function(res) {
-        timelock = res;
-        return new Storage(process.env.CONTRACT_STORAGE);
-    }).then(function(res) {
-        return res.setGovernance(timelock.address, {from: network.admin});
-    }).then(function(res) {
-        console.dir("change admin to timelock");
-        console.dir(res);
-    });
-    //最后部署接口合约
-    let dataCollactor = null;
-    let dataCollactorProxy = null;
-    await deployer.deploy(DataCollactor).then(function(res) {
-        dataCollactor = res;
-        return deployer.deploy(DataCollactorProxy, res.address);
-    }).then(function(res) {
-        dataCollactorProxy = res;
-        return new DataCollactor(dataCollactorProxy.address);
-    }).then(function(res) {
-        dataCollactor = res;
-        return dataCollactor.setSeedPool(seedPool.address);
-    }).then(function(res) {
-        console.dir("set seedPool finish");
-        console.dir(res);
-        return dataCollactorProxy.transferOwnership(network.admin);
-    }).then(function(res) {
-        console.dir("transferOwnership finish");
-        console.dir(res);
-    });
-    result['controller'] = controller.address;
-    result['seedPool'] = seedPool.address;
-    result['rewardToken'] = process.env.CONTRACT_REWARDTOKEN;
-    result['stakePool'] = process.env.CONTRACT_AUTOSTAKE;
-    result['dataCollactor'] = dataCollactor.address;
-    result['tokens'] = [];
-    result['timelock'] = timelock.address;
-    for (let i = 0; i < network.tokens.length; i ++) {
-        let token = network.tokens[i];
-        result['tokens'].push({
-            'symbol' : token.symbol,
-            'contract' : token.contract,
-            'vault': vaults[token.symbol]['vault'].address,
-            'strategy': vaults[token.symbol]['strategy'].address,
-            'pid': i,
-        })
-    }
-    console.log("deploy result:");
-    console.log(JSON.stringify(result));
-    console.log("deploy finish");
+    process.env.VAULTS = JSON.stringify(vaults);
 };

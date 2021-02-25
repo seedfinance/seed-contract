@@ -3,10 +3,12 @@ const HDWalletProvider = require('@truffle/hdwallet-provider');
 module.exports = {
   networks: {
     development: {
-     host: "172.18.12.88",
-     port: 8545,
      network_id: "*",
      gas: 6721975,
+     provider: function () {
+       return new HDWalletProvider('0x6bc778fd03fb64cebd855d64ae45048a04b154478f1a8aa25d2ebf4491488a58', `http://172.18.12.88:8545`)
+     },
+     from: '0x4f7b45C407ec1B106Ba3772e0Ecc7FD4504d3b92'
     },
     ropsten: {
       provider: function () {

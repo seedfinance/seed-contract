@@ -1,4 +1,5 @@
 pragma solidity 0.5.16;
+pragma experimental ABIEncoderV2;
 
 // import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/ownership/Ownable.sol";
@@ -66,6 +67,10 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
         vault = _vault;
         devaddr = _devaddr;
         valutUnderlying = IERC20(IVault(_vault).underlying());
+    }
+
+    function getMarketNum() external view returns (uint256) {
+        return market.length;
     }
 
     function underlying() external view returns (address) {

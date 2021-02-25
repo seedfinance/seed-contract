@@ -1,7 +1,8 @@
 {
-    "admin": "0x41Ef4a5902762050FB3ACE4EB9108D106AFf4606",
+    "admin": "0x4f7b45C407ec1B106Ba3772e0Ecc7FD4504d3b92",
     "invister": "0xb1690Af1CAc29d4b098F473D4121F43cB52eF749",
     "dever":"0xd96b5B7fE4E8Ba829Ff52e5f474fD34C3348A590",
+    "miner":"0x0B9E0E361bda7948E6B8141FbBA55fbcFf479096",
     "greylistEscrow": "0x2163aa3674Ae086F38Bd0bA89a41Ad41AAF046E6",
     "startBlock": 10000,
     "seedPerBlock": "153030753968253968",
@@ -77,5 +78,6 @@
             "address" : "0xA500E1Be0f174C8d02e14f2242aA50549Ca63f70"
         }
     ],
-    "mdex" : "0x04445aCCc1871752Fe3e2adefEB1C06E7059C85A"
+    "mdex" : "0x04445aCCc1871752Fe3e2adefEB1C06E7059C85A",
+    "useTimelock": true
 }
