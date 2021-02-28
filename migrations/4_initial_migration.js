@@ -52,6 +52,11 @@ module.exports = async function(deployer) {
         return controller.setFeeRewardForwarder(feeRewardForward.address, {from: network.admin});
     }).then(function(res) {
         console.dir("setFeeRewardForwarder finish");
+        console.dir(res);
+        return controller.addHardWorker(network.miner, {from: network.admin});
+    }).then(function(res) {
+        console.dir("add hardWorker " + network.miner);
+        console.dir(res);
         return new Storage(process.env.CONTRACT_STORAGE);
     }).then(function(res) {
         return res.setController(controller.address, {from: network.admin});
