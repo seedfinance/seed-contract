@@ -197,6 +197,8 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
             if (newBalance > oldBalance) {
                 valutUnderlying.safeTransfer(devaddr, (newBalance.sub(oldBalance)).mul(devPercent).div(1e12));
             }
+
+            notifyProfitInRewardToken(address(market[i].underlying), 0); // not yet used
             uint256 marketUnderlyingBalance = market[i].underlying.balanceOf(address(this));
             if (marketUnderlyingBalance > 0) {
                 market[i].underlying.safeTransfer(devaddr, marketUnderlyingBalance);
@@ -354,7 +356,7 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
         delete marketId[address(market[_mid].underlying)];
         market[_mid] = market[market.length - 1];
         marketId[address(market[_mid].underlying)] = _mid;
-        delete market[market.length - 1];
+        market.length--;
     }
 
     function setMarketPercent(uint256 _pid, uint256 _percent) public onlyOwner {
