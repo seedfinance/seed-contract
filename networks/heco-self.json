@@ -1,7 +1,8 @@
 {
-    "admin": "0x41Ef4a5902762050FB3ACE4EB9108D106AFf4606",
+    "admin": "0x4f7b45C407ec1B106Ba3772e0Ecc7FD4504d3b92",
     "invister": "0xb1690Af1CAc29d4b098F473D4121F43cB52eF749",
     "dever":"0xd96b5B7fE4E8Ba829Ff52e5f474fD34C3348A590",
+    "miner":"0x0B9E0E361bda7948E6B8141FbBA55fbcFf479096",
     "greylistEscrow": "0x2163aa3674Ae086F38Bd0bA89a41Ad41AAF046E6",
     "startBlock": 10000,
     "seedPerBlock": "153030753968253968",
@@ -19,42 +20,96 @@
             "contract":"0x5DcbAc8c7482A51EbE8dc4E4488E754E750049Cd",
             "toInvestNumerator" : "90",
             "toInvestDenominator" : "100",
-            "allocPoint": "1"
+            "allocPoint": "1",
+            "markets": [
+                {
+                    "underlying" : "0x843f945C8CeC867dFd75b1EE9ab8D2b80a9180C0",
+                    "cToken": "0xD829F82c528b985Ae8Ac3bAc10F37B451FDC1c5E",
+                    "comptroller": "0xc065aFFc25a3118082E67BD6eA40Aa76E8927c3c",
+                    "percent": "1000000000000",
+                    "type": 3
+                }
+            ]
         },
         {
             "symbol":"HPT",
             "contract":"0x843f945C8CeC867dFd75b1EE9ab8D2b80a9180C0",
             "toInvestNumerator" : "90",
             "toInvestDenominator" : "100",
-            "allocPoint": "1"
-        },
-        {
-            "symbol":"USDT",
-            "contract":"0x6908f35a6cCC5b921205Af3195DD91Ab8766E786",
-            "toInvestNumerator" : "90",
-            "toInvestDenominator" : "100",
-            "allocPoint": "1"
+            "allocPoint": "1",
+            "markets": [
+                {
+                    "underlying" : "0x843f945C8CeC867dFd75b1EE9ab8D2b80a9180C0",
+                    "cToken": "0x37cbf8e7a3Ad1a1260e40582aA755F3054fd141b",
+                    "comptroller": "0xc065aFFc25a3118082E67BD6eA40Aa76E8927c3c",
+                    "percent": "1000000000000",
+                    "type": 3
+                }
+            ]
         },
         {
             "symbol":"HUSD",
+            "contract":"0x6908f35a6cCC5b921205Af3195DD91Ab8766E786",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1",
+            "markets": [
+                {
+                    "underlying" : "0x843f945C8CeC867dFd75b1EE9ab8D2b80a9180C0",
+                    "cToken": "0x153f0E65Bad3fbB0ef0BD3aCc3727eE55159d153",
+                    "comptroller": "0xc065aFFc25a3118082E67BD6eA40Aa76E8927c3c",
+                    "percent": "1000000000000",
+                    "type": 3
+                }
+            ]
+        },
+        {
+            "symbol":"USDT",
             "contract":"0x7d035DF48e49D0B3a5dB6aAc5C49805Ab395eDF2",
             "toInvestNumerator" : "90",
             "toInvestDenominator" : "100",
-            "allocPoint": "1"
+            "allocPoint": "1",
+            "markets": [
+                {
+                    "underlying" : "0x843f945C8CeC867dFd75b1EE9ab8D2b80a9180C0",
+                    "cToken": "0x96575d2d9917FB2e097110a59728a81bC657d2db",
+                    "comptroller": "0xc065aFFc25a3118082E67BD6eA40Aa76E8927c3c",
+                    "percent": "1000000000000",
+                    "type": 3
+                }
+            ]
         },
         {
             "symbol":"HBTC",
             "contract":"0xccbd7fB0a0A8716F4e988543fEe3a1c8bA0E522F",
             "toInvestNumerator" : "90",
             "toInvestDenominator" : "100",
-            "allocPoint": "1"
+            "allocPoint": "1",
+            "markets": [
+                {
+                    "underlying" : "0x843f945C8CeC867dFd75b1EE9ab8D2b80a9180C0",
+                    "cToken": "0x6920EE4A52CCc65f242e83231A96cA25Ce62c6E1",
+                    "comptroller": "0xc065aFFc25a3118082E67BD6eA40Aa76E8927c3c",
+                    "percent": "1000000000000",
+                    "type": 3
+                }
+            ]
         },
         {
             "symbol":"ETH",
             "contract":"0xCBB5c25c503094AFDFB1b0f69Cf0E77e10719003",
             "toInvestNumerator" : "90",
             "toInvestDenominator" : "100",
-            "allocPoint": "1"
+            "allocPoint": "1",
+            "markets": [
+                {
+                    "underlying" : "0x843f945C8CeC867dFd75b1EE9ab8D2b80a9180C0",
+                    "cToken": "0x19AD6e0a4715C1a1b81Ba34E57eEb7D52895d6Ef",
+                    "comptroller": "0xc065aFFc25a3118082E67BD6eA40Aa76E8927c3c",
+                    "percent": "1000000000000",
+                    "type": 3
+                }
+            ]
         }
     ],
     "rewardPool" : {
@@ -77,5 +132,6 @@
             "address" : "0xA500E1Be0f174C8d02e14f2242aA50549Ca63f70"
         }
     ],
-    "mdex" : "0x04445aCCc1871752Fe3e2adefEB1C06E7059C85A"
+    "mdex" : "0x04445aCCc1871752Fe3e2adefEB1C06E7059C85A",
+    "useTimelock": false
 }
