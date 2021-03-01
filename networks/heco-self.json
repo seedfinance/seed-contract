@@ -17,7 +17,7 @@
     "tokens": [
         {
             "symbol":"HT",
-            "contract":"0x5DcbAc8c7482A51EbE8dc4E4488E754E750049Cd",
+            "contract":"0xcc68f19938a9dae6cfC9Dbf751402226E8447BC7",
             "toInvestNumerator" : "90",
             "toInvestDenominator" : "100",
             "allocPoint": "1",

@@ -55,4 +55,12 @@ contract DataCollactor is Ownable {
         }
         return totalAPY.mul(7000).div(10000);
     }
+
+    function getPriceToUsdt(address token, address usdt, address router) public view returns (uint256) {
+        uint tokenA = IERC20(token).balanceOf(router);
+        uint tokenB = IERC20(usdt).balanceOf(router);
+        uint price = tokenB.mul(1e18).div(tokenA);
+        return price;
+    }
+
 }
