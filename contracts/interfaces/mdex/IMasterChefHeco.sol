@@ -10,3 +10,13 @@ interface IMasterChefHeco {
     function LpOfPid(address _token) external view returns (uint256 _pid);
     function emergencyWithdraw(uint256 pid) external;
 }
+interface IWHT {
+    function deposit() external payable;
+    function withdraw(uint wad) external;
+    function totalSupply() external view returns (uint);
+    function approve(address guy, uint wad) external returns (bool);
+    function transfer(address dst, uint wad) external returns (bool);
+    function transferFrom(address src, address dst, uint wad) external returns (bool);
+    function balanceOf(address src) external view returns (uint);
+    function allowance(address src, address dst) external view returns (uint);
+}
