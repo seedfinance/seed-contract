@@ -86,6 +86,7 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
      */
     function investAllUnderlying() public restricted {
         uint256 balance = valutUnderlying.balanceOf(address(this));
+        if (balance == 0) return;
         for (uint256 i = 0; i < market.length; i++) {
             if (market[i].investPaused) {
                 continue;
