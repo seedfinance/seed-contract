@@ -230,11 +230,13 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
         IERC20(token).safeTransfer(recipient, amount);
     }
 
-    function claim() internal {
+    function claim() public {
+        address[] memory ctokens = new address[](1);
         for (uint256 i = 0; i < market.length; i++) {
             if (market[i].claimPaused) {
                 continue;
             }
+            ctokens[0] = market[i].investRouter;
             if (market[i].marketType == MarketType.Swap) {
                 uint256 pid =
                     IMasterChefHeco(market[i].investRouter).LpOfPid(
@@ -247,9 +249,9 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
             } else if (market[i].marketType == MarketType.RewardPool) {
                 IRewardPool(market[i].investRouter).getReward();
             } else if (market[i].marketType == MarketType.Compound) {
-                ComptrollerInterface(market[i].investRouter2).claimComp(address(this));
+                ComptrollerInterface(market[i].investRouter2).claimComp(address(this), ctokens);
             } else if (market[i].marketType == MarketType.Channels) {
-                CantrollerInterface(market[i].investRouter2).claimCan(address(this));
+                CantrollerInterface(market[i].investRouter2).claimCan(address(this), ctokens);
             }
             uint256 mUnderlyingBalance = market[i].underlying.balanceOf(address(this));
             if (mUnderlyingBalance > 0) {
