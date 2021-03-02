@@ -187,8 +187,9 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
                     CTokenInterface(market[i].investRouter).balanceOf(
                         address(this)
                     );
+                uint256 htOldBalance = address(this).balance;
                 CEtherInterface(market[i].investRouter).redeem(amount);
-                valutUnderlying.deposit.value(amount)();
+                valutUnderlying.deposit.value(address(this).balance.sub(htOldBalance))();
             }
             uint256 newBalance = valutUnderlying.balanceOf(address(this));
             if (newBalance > oldBalance) {
@@ -351,6 +352,9 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
         market[_mid] = market[market.length - 1];
         marketId[address(market[_mid].underlying)] = _mid;
         market.length--;
+        if (_mid < market.length) {
+            marketId[address(market[_mid].underlying)] = _mid;
+        }
     }
 
     function setMarketPercent(uint256 _pid, uint256 _percent) public onlyOwner {
@@ -375,5 +379,8 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
     function updateDevAddr(address _newAddress) public onlyGovernance {
         require(_newAddress != address(0), "address is unvalid");
         devaddr = _newAddress;
+    }
+    function() external payable {
+
     }
 }

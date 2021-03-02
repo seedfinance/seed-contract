@@ -358,8 +358,10 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
         require(_mid < market.length, "mid out of range");
         delete marketId[address(market[_mid].underlying)];
         market[_mid] = market[market.length - 1];
-        marketId[address(market[_mid].underlying)] = _mid;
         market.length--;
+        if (_mid < market.length) {
+            marketId[address(market[_mid].underlying)] = _mid;
+        }
     }
 
     function setMarketPercent(uint256 _pid, uint256 _percent) public onlyOwner {
