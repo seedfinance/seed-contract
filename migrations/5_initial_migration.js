@@ -59,8 +59,12 @@ module.exports = async function(deployer) {
         }).then(async function(res) {
             vaults[token.symbol]['strategy'] = res;
             return res.setLiquidation(true);
+        }).then(function(res) {
+            console.log("setLiquidation finish");
+            console.dir(res);
+            return vaults[token.symbol]['strategy'].transferOwnership(network.miner)
         }).then(async function(res) {
-            console.dir("setLiquidation finish");
+            console.dir("transferOwnership finish");
             console.dir(res);
             if (token.markets != null) {
                 for (let j = 0; j < token.markets.length; j ++) {
