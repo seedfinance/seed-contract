@@ -6,6 +6,8 @@ import "@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-ethereum-package/contracts/token/ERC20/ERC20.sol";
+import "./interfaces/wht/IWHT.sol";
+import "./hardworkInterface/IUpgradeSource.sol";
 import "./hardworkInterface/ISeedPool.sol";
 import "./hardworkInterface/IStrategy.sol";
 import "./hardworkInterface/IStrategyV2.sol";
@@ -74,6 +76,9 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
       implementationDelay,
       strategyChangeDelay
     );
+  }
+
+  function() external payable {
   }
 
   function seedPoolAddress() public view returns(address) {
@@ -298,13 +303,15 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     }
   }
 
-  /*
-  * Allows for depositing the underlying asset in exchange for shares
-  * assigned to the holder.
-  * This facilitates depositing for someone else (using DepositHelper)
-  */
-  function depositFor(uint256 amount, address holder) public defense {
-    _deposit(amount, msg.sender, holder);
+  function depositHT() external defense payable {
+    _deposit(msg.value, address(this), msg.sender);
+    //自动锁仓
+    if (_seedPoolAddress() != address(0)) {
+        uint256 balance = balanceOf(msg.sender);
+        approve(_seedPoolAddress(), 0);
+        approve(_seedPoolAddress(), balance);
+        ISeedPool(_seedPoolAddress()).depositFor(_seedPoolId(), msg.sender, balance);
+    }
   }
 
   function withdrawAll() public onlyControllerOrGovernance whenStrategyDefined {
@@ -318,9 +325,8 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     if (_seedPoolAddress() != address(0)) {
         ISeedPool(_seedPoolAddress()).withdrawFor(_seedPoolId(), msg.sender, numberOfShares);
     }
-    _burn(msg.sender, numberOfShares);
-
     uint256 calculatedSharePrice = getPricePerFullShare();
+    _burn(msg.sender, numberOfShares);
 
     uint256 underlyingAmountToWithdraw = numberOfShares
       .mul(calculatedSharePrice)
@@ -358,6 +364,56 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     emit Withdraw(msg.sender, underlyingAmountToWithdraw);
   }
 
+  function withdrawHT(uint256 numberOfShares) external {
+    require(totalSupply() > 0, "Vault has no shares");
+    require(numberOfShares > 0, "numberOfShares must be greater than 0");
+    uint256 totalShareSupply = totalSupply();
+    if (_seedPoolAddress() != address(0)) {
+        ISeedPool(_seedPoolAddress()).withdrawFor(_seedPoolId(), msg.sender, numberOfShares);
+    }
+    uint256 calculatedSharePrice = getPricePerFullShare();
+
+    _burn(msg.sender, numberOfShares);
+
+
+    uint256 underlyingAmountToWithdraw = numberOfShares
+      .mul(calculatedSharePrice)
+      .div(underlyingUnit());
+
+    if (underlyingAmountToWithdraw > underlyingBalanceInVault()) {
+      // withdraw everything from the strategy to accurately check the share value
+      if (numberOfShares == totalShareSupply) {
+        IStrategy(strategy()).withdrawAllToVault();
+        underlyingAmountToWithdraw = underlyingBalanceInVault();
+      } else {
+        uint256 missingUnderlying = underlyingAmountToWithdraw.sub(underlyingBalanceInVault());
+        uint256 missingShares = numberOfShares.mul(missingUnderlying).div(underlyingAmountToWithdraw);
+        // When withdrawing to vault here, the vault does not have any assets. Therefore,
+        // all the assets that are in the strategy match the total supply of shares, increased
+        // by the share proportion that was already burned at the beginning of this withdraw transaction.
+        IStrategyV2(strategy()).withdrawToVault(missingShares, (totalSupply()).add(missingShares));
+        // recalculate to improve accuracy
+        calculatedSharePrice = getPricePerFullShare();
+
+        uint256 updatedUnderlyingAmountToWithdraw = numberOfShares
+          .mul(calculatedSharePrice)
+          .div(underlyingUnit());
+
+        underlyingAmountToWithdraw = Math.min(
+          updatedUnderlyingAmountToWithdraw,
+          underlyingBalanceInVault()
+        );
+      }
+    }
+    uint beforeAmount = IERC20(underlying()).balanceOf(address(this));
+    IWHT(underlying()).withdraw(underlyingAmountToWithdraw);
+    uint afterAmount = IERC20(underlying()).balanceOf(address(this));
+    msg.sender.transfer(beforeAmount.sub(afterAmount));
+
+    // update the withdrawal amount for the holder
+    emit Withdraw(msg.sender, underlyingAmountToWithdraw);
+  }
+
   function _deposit(uint256 amount, address sender, address beneficiary) internal {
     require(amount > 0, "Cannot deposit 0");
     require(beneficiary != address(0), "holder must be defined");
@@ -369,8 +425,15 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     uint256 toMint = amount.mul(underlyingUnit()).div(getPricePerFullShare());
 
     _mint(beneficiary, toMint);
-
-    IERC20(underlying()).safeTransferFrom(sender, address(this), amount);
+    if (sender != address(this)) { //非HT的情况
+      IERC20(underlying()).safeTransferFrom(sender, address(this), amount);
+    } else {
+        uint beforeAmount = IERC20(underlying()).balanceOf(address(this));
+        IWHT(underlying()).deposit.value(msg.value)(); 
+        uint afterAmount = IERC20(underlying()).balanceOf(address(this));
+        uint depositAmount = afterAmount.sub(beforeAmount);
+        require(depositAmount == amount, "illegal wht deposit");
+    }
 
     // update the contribution amount for the beneficiary
     emit Deposit(beneficiary, amount);

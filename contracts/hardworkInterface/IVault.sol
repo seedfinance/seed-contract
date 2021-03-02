@@ -15,10 +15,11 @@ interface IVault {
     function setVaultFractionToInvest(uint256 numerator, uint256 denominator) external;
 
     function deposit(uint256 amountWei) external;
-    function depositFor(uint256 amountWei, address holder) external;
+    function depositHT() external payable;
 
     function withdrawAll() external;
     function withdraw(uint256 numberOfShares) external;
+    function withdrawHT(uint256 numberOfShares) external;
     function getPricePerFullShare() external view returns (uint256);
 
     function underlyingBalanceWithInvestmentForHolder(address holder) view external returns (uint256);

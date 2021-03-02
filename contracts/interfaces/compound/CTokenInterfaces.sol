@@ -300,3 +300,7 @@ contract CDelegateInterface is CDelegationStorage {
      */
     function _resignImplementation() public;
 }
+contract CEtherInterface {
+    function mint() external payable;
+    function redeem(uint redeemTokens) external returns (uint);
+}

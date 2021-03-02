@@ -4,6 +4,7 @@ const ExclusiveRewardPool = artifacts.require('ExclusiveRewardPool');
 const Controller = artifacts.require('Controller');
 const Vault = artifacts.require('Vault');
 const VaultProxy = artifacts.require('VaultProxy');
+const SeedFinanceStrategyHT = artifacts.require('SeedFinanceStrategyHT');
 const AutoStake = artifacts.require('AutoStake');
 const SeedPool = artifacts.require('SeedPool');
 const format = require('string-format');
@@ -50,7 +51,11 @@ module.exports = async function(deployer) {
             return vaults[token.symbol]['vault'].setSeedPoolId(i, {from: network.admin});
         }).then(function(res) {
             console.dir("setSeedPoolId finish");
-            return deployer.deploy(SeedFinanceStrategy, process.env.CONTRACT_STORAGE, vaults[token.symbol]['vault'].address, network.dever)
+            if (token.symbol == 'HT') {
+                return deployer.deploy(SeedFinanceStrategyHT, process.env.CONTRACT_STORAGE, vaults[token.symbol]['vault'].address, network.dever)
+            } else {
+                return deployer.deploy(SeedFinanceStrategy, process.env.CONTRACT_STORAGE, vaults[token.symbol]['vault'].address, network.dever)
+            }
         }).then(async function(res) {
             vaults[token.symbol]['strategy'] = res;
             return res.setLiquidation(true);

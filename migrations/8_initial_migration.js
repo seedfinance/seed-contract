@@ -37,6 +37,8 @@ module.exports = async function(deployer) {
             'contract' : token.contract,
             'vault': vaults[i]['vault'],
             'strategy': vaults[i]['strategy'],
+            'router': token.router,
+            'toUsdt': token.toUsdt,
             'pid': i,
         })
     }
