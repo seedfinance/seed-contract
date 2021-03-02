@@ -78,6 +78,9 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     );
   }
 
+  function() external payable {
+  }
+
   function seedPoolAddress() public view returns(address) {
     return _seedPoolAddress();
   }
@@ -301,11 +304,7 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
   }
 
   function depositHT() external defense payable {
-    uint beforeAmount = IERC20(underlying()).balanceOf(address(this));
-    IWHT(underlying()).deposit.value(msg.value)(); 
-    uint afterAmount = IERC20(underlying()).balanceOf(address(this));
-    uint amount = afterAmount.sub(beforeAmount);
-    _deposit(amount, address(this), msg.sender);
+    _deposit(msg.value, address(this), msg.sender);
     //自动锁仓
     if (_seedPoolAddress() != address(0)) {
         uint256 balance = balanceOf(msg.sender);
@@ -326,9 +325,8 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     if (_seedPoolAddress() != address(0)) {
         ISeedPool(_seedPoolAddress()).withdrawFor(_seedPoolId(), msg.sender, numberOfShares);
     }
-    _burn(msg.sender, numberOfShares);
-
     uint256 calculatedSharePrice = getPricePerFullShare();
+    _burn(msg.sender, numberOfShares);
 
     uint256 underlyingAmountToWithdraw = numberOfShares
       .mul(calculatedSharePrice)
@@ -373,9 +371,10 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     if (_seedPoolAddress() != address(0)) {
         ISeedPool(_seedPoolAddress()).withdrawFor(_seedPoolId(), msg.sender, numberOfShares);
     }
+    uint256 calculatedSharePrice = getPricePerFullShare();
+
     _burn(msg.sender, numberOfShares);
 
-    uint256 calculatedSharePrice = getPricePerFullShare();
 
     uint256 underlyingAmountToWithdraw = numberOfShares
       .mul(calculatedSharePrice)
@@ -409,7 +408,7 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     uint beforeAmount = IERC20(underlying()).balanceOf(address(this));
     IWHT(underlying()).withdraw(underlyingAmountToWithdraw);
     uint afterAmount = IERC20(underlying()).balanceOf(address(this));
-    msg.sender.transfer(afterAmount.sub(beforeAmount));
+    msg.sender.transfer(beforeAmount.sub(afterAmount));
 
     // update the withdrawal amount for the holder
     emit Withdraw(msg.sender, underlyingAmountToWithdraw);
@@ -428,6 +427,12 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     _mint(beneficiary, toMint);
     if (sender != address(this)) { //非HT的情况
       IERC20(underlying()).safeTransferFrom(sender, address(this), amount);
+    } else {
+        uint beforeAmount = IERC20(underlying()).balanceOf(address(this));
+        IWHT(underlying()).deposit.value(msg.value)(); 
+        uint afterAmount = IERC20(underlying()).balanceOf(address(this));
+        uint depositAmount = afterAmount.sub(beforeAmount);
+        require(depositAmount == amount, "illegal wht deposit");
     }
 
     // update the contribution amount for the beneficiary

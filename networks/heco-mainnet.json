@@ -1,0 +1,233 @@
+{
+    "admin": "0x2B13afb77E2c1B7569201fC2aA1A71200F1dE383",
+    "invister": "0x2B13afb77E2c1B7569201fC2aA1A71200F1dE383",
+    "dever":"0x2B13afb77E2c1B7569201fC2aA1A71200F1dE383",
+    "miner":"0x0B9E0E361bda7948E6B8141FbBA55fbcFf479096",
+    "greylistEscrow": "0x2B13afb77E2c1B7569201fC2aA1A71200F1dE383",
+    "startBlock": 2578979,
+    "seedPerBlock": "153030753968253968",
+    "delaySeconds": 86400,
+    "bonusBlockCycle": 201600,
+    "boundsSeedPerBlocks": [
+        "318878968253968253",
+        "248015873015873015",
+        "198412698412698412",
+        "162981150793650793"
+    ],
+    "tokens": [
+        {
+            "symbol":"HT",
+            "contract":"0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1",
+            "toUsdt":"0xa71edc38d189767582c38a3145b5873052c3e47a",
+            "router":"0x499b6e03749b4baf95f9e70eed5355b138ea6c31",
+            "markets": [
+                {
+                    "underlying" : "0xe36ffd17b2661eb57144ceaef942d95295e637f0",
+                    "cToken": "0x824151251b38056d54a15e56b73c54ba44811af8",
+                    "comptroller": "0xb74633f2022452f377403b638167b0a135db096d",
+                    "percent": "400000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x8f67854497218043e1f72908ffe38d0ed7f24721",
+                    "cToken": "0x99a2114b282acc9dd25804782acb4d3a2b1ad215",
+                    "comptroller": "0x6537d6307ca40231939985bcf7d83096dd1b4c09",
+                    "percent": "300000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x1e6395E6B059fc97a4ddA925b6c5ebf19E05c69f",
+                    "cToken": "0x397c6d1723360cc1c317cdc9b2e926ae29626ff3",
+                    "comptroller": "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770",
+                    "percent": "300000000000",
+                    "type": 3
+                }
+            ]
+        },
+        {
+            "symbol":"HPT",
+            "contract":"0xe499ef4616993730ced0f31fa2703b92b50bb536",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1",
+            "toUsdt":"0xa71edc38d189767582c38a3145b5873052c3e47a",
+            "router":"0xde5b574925ee475c41b99a7591ec43e92dcd2fc1",
+            "markets": [
+                {
+                    "underlying" : "0xe36ffd17b2661eb57144ceaef942d95295e637f0",
+                    "cToken": "0x043afb65e93500ce5bcbf5bbb41fc1fdce2b7518",
+                    "comptroller": "0xb74633f2022452f377403b638167b0a135db096d",
+                    "percent": "400000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x8f67854497218043e1f72908ffe38d0ed7f24721",
+                    "cToken": "0xd0dab69b6fb781805b4236867cf2a3d998bdf2ea",
+                    "comptroller": "0x6537d6307ca40231939985bcf7d83096dd1b4c09",
+                    "percent": "300000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x1e6395E6B059fc97a4ddA925b6c5ebf19E05c69f",
+                    "cToken": "0x3465bcf382a41cf90ff4eadc593a053f71062f91",
+                    "comptroller": "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770",
+                    "percent": "300000000000",
+                    "type": 3
+                }
+            ]
+        },
+        {
+            "symbol":"HUSD",
+            "contract":"0x0298c2b32eae4da002a15f36fdf7615bea3da047",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1",
+            "toUsdt":"0xa71edc38d189767582c38a3145b5873052c3e47a",
+            "router":"0xdff86b408284dff30a7cad7688fedb465734501c",
+            "markets": [
+                {
+                    "underlying" : "0xe36ffd17b2661eb57144ceaef942d95295e637f0",
+                    "cToken": "0xb16df14c53c4bcff220f4314ebce70183dd804c0",
+                    "comptroller": "0xb74633f2022452f377403b638167b0a135db096d",
+                    "percent": "400000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x8f67854497218043e1f72908ffe38d0ed7f24721",
+                    "cToken": "0x1c478d5d1823d51c4c4b196652912a89d9b46c30",
+                    "comptroller": "0x6537d6307ca40231939985bcf7d83096dd1b4c09",
+                    "percent": "300000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x1e6395E6B059fc97a4ddA925b6c5ebf19E05c69f",
+                    "cToken": "0x9a57eab16d371048c56cbe0c4d608096aec5b405",
+                    "comptroller": "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770",
+                    "percent": "300000000000",
+                    "type": 3
+                }
+            ]
+        },
+        {
+            "symbol":"USDT",
+            "contract":"0xa71edc38d189767582c38a3145b5873052c3e47a",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1",
+            "toUsdt":"0xa71edc38d189767582c38a3145b5873052c3e47a",
+            "router":"",
+            "markets": [
+                {
+                    "underlying" : "0xe36ffd17b2661eb57144ceaef942d95295e637f0",
+                    "cToken": "0xaab0c9561d5703e84867670ac78f6b5b4b40a7c1",
+                    "comptroller": "0xb74633f2022452f377403b638167b0a135db096d",
+                    "percent": "400000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x8f67854497218043e1f72908ffe38d0ed7f24721",
+                    "cToken": "0xc502f3f6f1b71cb7d856e70b574d27d942c2993c",
+                    "comptroller": "0x6537d6307ca40231939985bcf7d83096dd1b4c09",
+                    "percent": "300000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x1e6395E6B059fc97a4ddA925b6c5ebf19E05c69f",
+                    "cToken": "0x3da74c09ccb8faba3153b7f6189dda9d7f28156a",
+                    "comptroller": "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770",
+                    "percent": "300000000000",
+                    "type": 3
+                }
+            ]
+        },
+        {
+            "symbol":"HBTC",
+            "contract":"0x66a79d23e58475d2738179ca52cd0b41d73f0bea",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1",
+            "toUsdt":"0xa71edc38d189767582c38a3145b5873052c3e47a",
+            "router":"0xfbe7b74623e4be82279027a286fa3a5b5280f77c",
+            "markets": [
+                {
+                    "underlying" : "0xe36ffd17b2661eb57144ceaef942d95295e637f0",
+                    "cToken": "0xf2a308d3aea9bd16799a5984e20fdbfef6c3f595",
+                    "comptroller": "0xb74633f2022452f377403b638167b0a135db096d",
+                    "percent": "400000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x8f67854497218043e1f72908ffe38d0ed7f24721",
+                    "cToken": "0x1e5829e405654070cf4eaefea46d9a848a81462b",
+                    "comptroller": "0x6537d6307ca40231939985bcf7d83096dd1b4c09",
+                    "percent": "300000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x1e6395E6B059fc97a4ddA925b6c5ebf19E05c69f",
+                    "cToken": "0x8fefb583e077de36f68444a14e68172b01e27dd7",
+                    "comptroller": "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770",
+                    "percent": "300000000000",
+                    "type": 3
+                }
+            ]
+        },
+        {
+            "symbol":"ETH",
+            "contract":"0x64ff637fb478863b7468bc97d30a5bf3a428a1fd",
+            "toInvestNumerator" : "90",
+            "toInvestDenominator" : "100",
+            "allocPoint": "1",
+            "toUsdt":"0xa71edc38d189767582c38a3145b5873052c3e47a",
+            "router":"0x78c90d3f8a64474982417cdb490e840c01e516d4",
+            "markets": [
+                {
+                    "underlying" : "0xe36ffd17b2661eb57144ceaef942d95295e637f0",
+                    "cToken": "0x033f8c30bb17b47f6f1f46f3a42cc9771ccbcaae",
+                    "comptroller": "0xb74633f2022452f377403b638167b0a135db096d",
+                    "percent": "400000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x8f67854497218043e1f72908ffe38d0ed7f24721",
+                    "cToken": "0x505bdd86108e7d9d662234f6a5f8a4cbaece81ab",
+                    "comptroller": "0x6537d6307ca40231939985bcf7d83096dd1b4c09",
+                    "percent": "300000000000",
+                    "type": 2
+                },
+                {
+                    "underlying" : "0x1e6395E6B059fc97a4ddA925b6c5ebf19E05c69f",
+                    "cToken": "0x01371c08e2ae6f78d42c9796fa20ddb245df3885",
+                    "comptroller": "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770",
+                    "percent": "300000000000",
+                    "type": 3
+                }
+            ]
+        }
+    ],
+    "rewardPool" : {
+        "duration" : 3
+    },
+    "pools": [
+        {
+            "name":"SEED-HUSD",
+            "allocPoint" : "1",
+            "address" : "0x27C5E98437E2f7eb74ab7FFE9c1fC185ef8bf805"
+        },
+        {
+            "name":"SEED-USDT",
+            "allocPoint" : "1",
+            "address" : "0x04445aCCc1871752Fe3e2adefEB1C06E7059C85A"
+        },
+        {
+            "name":"SEED-HT",
+            "allocPoint" : "1",
+            "address" : "0xA500E1Be0f174C8d02e14f2242aA50549Ca63f70"
+        }
+    ],
+    "mdex" : "0x04445aCCc1871752Fe3e2adefEB1C06E7059C85A",
+    "useTimelock": false
+}
