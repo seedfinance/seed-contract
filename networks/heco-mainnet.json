@@ -58,7 +58,7 @@
             "markets": [
                 {
                     "underlying" : "0xe36ffd17b2661eb57144ceaef942d95295e637f0",
-                    "cToken": "0x043afb65e93500ce5bcbf5bbb41fc1fdce2b7518",
+                    "cToken": "0x749e0198f12559e7606987f8e7bd3aa1de6d236e",
                     "comptroller": "0xb74633f2022452f377403b638167b0a135db096d",
                     "percent": "400000000000",
                     "type": 2

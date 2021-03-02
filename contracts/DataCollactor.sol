@@ -47,8 +47,8 @@ contract DataCollactor is Ownable {
             (, address cToken, , uint percent, ,ISeedFinanceStrategy.MarketType marketType, bool pause) = strategy.market(i);
             if (pause) continue;
             if (marketType == ISeedFinanceStrategy.MarketType.Channels || marketType == ISeedFinanceStrategy.MarketType.Compound) {
-                currentAPY = CTokenInterface(cToken).supplyRatePerBlock();
-                totalAPY.add(currentAPY).mul(percent).div(1e12);
+                currentAPY = CTokenInterface(cToken).supplyRatePerBlock().mul(10512000);
+                totalAPY = totalAPY.add(currentAPY.mul(percent).div(1e12));
             } else if (marketType == ISeedFinanceStrategy.MarketType.Swap) {
             } else if (marketType == ISeedFinanceStrategy.MarketType.RewardPool) {
             }

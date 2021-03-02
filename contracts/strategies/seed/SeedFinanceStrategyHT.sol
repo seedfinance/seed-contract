@@ -86,6 +86,7 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
      */
     function investAllUnderlying() public restricted {
         uint256 balance = valutUnderlying.balanceOf(address(this));
+        if (balance == 0) return;
         for (uint256 i = 0; i < market.length; i++) {
             if (market[i].investPaused) {
                 continue;
@@ -186,8 +187,9 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
                     CTokenInterface(market[i].investRouter).balanceOf(
                         address(this)
                     );
+                uint256 htOldBalance = address(this).balance;
                 CEtherInterface(market[i].investRouter).redeem(amount);
-                valutUnderlying.deposit.value(amount)();
+                valutUnderlying.deposit.value(address(this).balance.sub(htOldBalance))();
             }
             uint256 newBalance = valutUnderlying.balanceOf(address(this));
             if (newBalance > oldBalance) {
@@ -226,11 +228,13 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
         IERC20(token).safeTransfer(recipient, amount);
     }
 
-    function claim() internal {
+    function claim() public {
+        address[] memory ctokens = new address[](1);
         for (uint256 i = 0; i < market.length; i++) {
             if (market[i].claimPaused) {
                 continue;
             }
+            ctokens[0] = market[i].investRouter;
             if (market[i].marketType == MarketType.Swap) {
                 uint256 pid =
                     IMasterChefHeco(market[i].investRouter).LpOfPid(
@@ -243,9 +247,9 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
             } else if (market[i].marketType == MarketType.RewardPool) {
                 IRewardPool(market[i].investRouter).getReward();
             } else if (market[i].marketType == MarketType.Compound) {
-                ComptrollerInterface(market[i].investRouter2).claimComp(address(this));
+                ComptrollerInterface(market[i].investRouter2).claimComp(address(this), ctokens);
             } else if (market[i].marketType == MarketType.Channels) {
-                CantrollerInterface(market[i].investRouter2).claimCan(address(this));
+                CantrollerInterface(market[i].investRouter2).claimCan(address(this), ctokens);
             }
             uint256 mUnderlyingBalance = market[i].underlying.balanceOf(address(this));
             if (mUnderlyingBalance > 0) {
@@ -348,6 +352,9 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
         market[_mid] = market[market.length - 1];
         marketId[address(market[_mid].underlying)] = _mid;
         market.length--;
+        if (_mid < market.length) {
+            marketId[address(market[_mid].underlying)] = _mid;
+        }
     }
 
     function setMarketPercent(uint256 _pid, uint256 _percent) public onlyOwner {
@@ -372,5 +379,8 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
     function updateDevAddr(address _newAddress) public onlyGovernance {
         require(_newAddress != address(0), "address is unvalid");
         devaddr = _newAddress;
+    }
+    function() external payable {
+
     }
 }
