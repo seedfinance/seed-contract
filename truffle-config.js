@@ -1,4 +1,5 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
+const secret = require("./.secret.json");
 
 module.exports = {
   networks: {
@@ -12,25 +13,16 @@ module.exports = {
      },
      from: '0x4f7b45C407ec1B106Ba3772e0Ecc7FD4504d3b92'
     },
-    ropsten: {
-      provider: function () {
-        const secret = require("./secret.json");
-        return new HDWalletProvider(secret.mnemonic, `https://ropsten.infura.io/v3/${secret.infuraKey}`, 1);
-      },
-      network_id: 3,
-      gas: 4721975,
-      skipDryRun: true,
-      gasPrice: 23000000000,
-    },
     mainnet: {
       provider: function () {
-        const secret = require("./secret.json");
-        return new HDWalletProvider(secret.mnemonic, `https://mainnet.infura.io/v3/${secret.infuraKey}`);
+        return new HDWalletProvider(secret.privatekey, `https://http-mainnet-node.huobichain.com`);
       },
-      network_id: 1,
-      gas: 6721975,
-      skipDryRun: true,
-      gasPrice: 75000000000,
+      from:secret.account,
+      confirmations: 2,    // # of confs to wait between deployments. (default: 0)
+      gasPrice: 2000000000,
+      gas: 17219750,
+      network_id: "*",       // Any network (default: none)
+      //skipDryRun: true,
     },
   },
   mocha: {
