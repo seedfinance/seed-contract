@@ -15,7 +15,7 @@ module.exports = {
     },
     mainnet: {
       provider: function () {
-        return new HDWalletProvider(secret.privatekey, `https://http-mainnet-node.huobichain.com`);
+        return new HDWalletProvider(secret.privatekey, `wss://ws-mainnet-node.huobichain.com`)
       },
       from:secret.account,
       confirmations: 2,    // # of confs to wait between deployments. (default: 0)
@@ -23,6 +23,7 @@ module.exports = {
       gas: 17219750,
       network_id: "*",       // Any network (default: none)
       //skipDryRun: true,
+      websockets: true,
     },
   },
   mocha: {
