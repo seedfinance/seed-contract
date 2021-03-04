@@ -1,6 +1,7 @@
 const format = require('string-format');
 const Storage = artifacts.require('Storage');
 const RewardToken = artifacts.require('RewardToken');
+const { verify } = require("truffle-heco-verify/lib");
 let activeNetwork = process.env.NETWORK;
 if (activeNetwork == null || activeNetwork == "") {
     activeNetwork = 'self';
@@ -11,12 +12,12 @@ const SeedPool = artifacts.require('SeedPool');
 /**
   * 部署SeedPool挖矿合约
 **/
-module.exports = async function(deployer) {
+module.exports = async function(deployer, networks) {
     //部署SeedPool
     let seedPool = null;
     let bonusBlockCycle = [network.startBlock+(network.bonusBlockCycle), network.startBlock+(network.bonusBlockCycle*2), network.startBlock+(network.bonusBlockCycle*3), network.startBlock+(network.bonusBlockCycle*4)]
     await deployer.deploy(SeedPool, process.env.CONTRACT_REWARDTOKEN, network.dever, network.invister, network.seedPerBlock, network.startBlock, bonusBlockCycle, network.boundsSeedPerBlocks).then(function(res) {
-        seedPool = res;    
+        seedPool = res;
         return seedPool.transferOwnership(network.admin);
     }).then(function(res) {
         console.dir("transfer seedPool ownerShip as " + network.admin);
@@ -27,5 +28,8 @@ module.exports = async function(deployer) {
         console.dir("add seedPool as minter finish");
         console.dir(res);
     });
+    if (networks == 'mainnet') {
+        await verify(["SeedPool@" + seedPool.address], networks, "UNLICENSED");
+    }
     process.env.CONTRACT_SEEDPOOL = seedPool.address;
 };

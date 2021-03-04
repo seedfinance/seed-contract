@@ -12,13 +12,14 @@ const SeedFinanceStrategy = artifacts.require('SeedFinanceStrategy');
 const Timelock = artifacts.require('Timelock');
 const DataCollactor = artifacts.require('DataCollactor');
 const DataCollactorProxy = artifacts.require('DataCollactorProxy');
+const { verify } = require("truffle-heco-verify/lib");
 let activeNetwork = process.env.NETWORK;
 if (activeNetwork == null || activeNetwork == "") {
     activeNetwork = 'self';
 }
 const network = require(format('../networks/heco-{}.json', activeNetwork));
 
-module.exports = async function(deployer) {
+module.exports = async function(deployer, networks) {
     //部署Timelock
     if (!network.useTimelock) {
         return;
@@ -33,5 +34,8 @@ module.exports = async function(deployer) {
         console.dir("change admin to timelock: " + timelock.address);
         console.dir(res);
     });
+    if (networks == 'mainnet') {
+        await verify(["Timelock@" + timelock.address], networks, "UNLICENSED");
+    }
     process.env.CONTRACT_TIMELOCK = timelock.address;
 };

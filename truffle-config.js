@@ -18,10 +18,10 @@ module.exports = {
         return new HDWalletProvider(secret.privatekey, `wss://ws-mainnet-node.huobichain.com`)
       },
       from:secret.account,
-      confirmations: 2,    // # of confs to wait between deployments. (default: 0)
+      // confirmations: 2,    // # of confs to wait between deployments. (default: 0)
       gasPrice: 2000000000,
       gas: 17219750,
-      network_id: "*",       // Any network (default: none)
+      network_id: 128,       // Any network (default: none)
       //skipDryRun: true,
       websockets: true,
     },
@@ -29,7 +29,7 @@ module.exports = {
   mocha: {
     timeout: 1200000
   },
-  plugins: ["solidity-coverage"],
+  plugins: ["solidity-coverage", "truffle-heco-verify"],
   compilers: {
     solc: {
       version: "0.5.16",
@@ -40,5 +40,8 @@ module.exports = {
        },
       }
     }
+  },
+  api_keys: {
+    hecoinfo: 'TZHWGUNQ1UNM3ZWTS4IUT4CMNYZYX3KC7V'
   }
 }

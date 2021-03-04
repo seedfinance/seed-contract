@@ -12,13 +12,14 @@ const SeedFinanceStrategy = artifacts.require('SeedFinanceStrategy');
 const Timelock = artifacts.require('Timelock');
 const DataCollactor = artifacts.require('DataCollactor');
 const DataCollactorProxy = artifacts.require('DataCollactorProxy');
+const { verify } = require("truffle-heco-verify/lib");
 let activeNetwork = process.env.NETWORK;
 if (activeNetwork == null || activeNetwork == "") {
     activeNetwork = 'self';
 }
 const network = require(format('../networks/heco-{}.json', activeNetwork));
 
-module.exports = async function(deployer) {
+module.exports = async function(deployer, networks) {
     //部署接口合约
     let dataCollactor = null;
     let dataCollactorProxy = null;
@@ -40,5 +41,9 @@ module.exports = async function(deployer) {
         console.dir("transferOwnership finish to " + network.admin);
         console.dir(res);
     });
+    if (networks == 'mainnet') {
+        await verify(["DataCollactor@" + dataCollactor.address], networks, "UNLICENSED");
+        await verify(["DataCollactorProxy@" + dataCollactorProxy.address], networks, "UNLICENSED");
+    }
     process.env.CONTRACT_DATACOLLACTOR = dataCollactor.address;
 };

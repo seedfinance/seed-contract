@@ -41,6 +41,7 @@
     "prettier": "^2.2.1",
     "prettier-plugin-solidity": "^1.0.0-beta.5",
     "solhint": "^3.3.2",
-    "solhint-plugin-prettier": "0.0.5"
+    "solhint-plugin-prettier": "0.0.5",
+    "truffle-heco-verify": "0.0.6"
   }
 }

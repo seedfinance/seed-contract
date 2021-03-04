@@ -13,13 +13,14 @@ const SeedFinanceStrategy = artifacts.require('SeedFinanceStrategy');
 const Timelock = artifacts.require('Timelock');
 const DataCollactor = artifacts.require('DataCollactor');
 const DataCollactorProxy = artifacts.require('DataCollactorProxy');
+const { verify } = require("truffle-heco-verify/lib");
 let activeNetwork = process.env.NETWORK;
 if (activeNetwork == null || activeNetwork == "") {
     activeNetwork = 'self';
 }
 const network = require(format('../networks/heco-{}.json', activeNetwork));
 
-module.exports = async function(deployer) {
+module.exports = async function(deployer, networks) {
     //部署Vault
     let vaultLogicer = null;
     let vaults = {}
@@ -29,6 +30,10 @@ module.exports = async function(deployer) {
     let seedPool = await new SeedPool(process.env.CONTRACT_SEEDPOOL);
     let controller = await new Controller(process.env.CONTRACT_CONTROLLER);
     let result = {}
+
+    if (networks == 'mainnet') {
+        await verify(["Vault@" + vaultLogicer.address], networks, "UNLICENSED");
+    }
     for (let i = 0; i < network.tokens.length; i ++) {
         let token = network.tokens[i];
         vaults[token.symbol] = {};
@@ -69,10 +74,10 @@ module.exports = async function(deployer) {
             if (token.markets != null) {
                 for (let j = 0; j < token.markets.length; j ++) {
                     tx = await vaults[token.symbol]['strategy'].addMarket(
-                        token.markets[j].underlying, 
-                        token.markets[j].cToken, 
-                        token.markets[j].comptroller, 
-                        token.markets[j].percent, 
+                        token.markets[j].underlying,
+                        token.markets[j].cToken,
+                        token.markets[j].comptroller,
+                        token.markets[j].percent,
                         token.markets[j].type,
                     );
                     console.dir("add new market");
@@ -84,6 +89,14 @@ module.exports = async function(deployer) {
             console.dir("addVaultAndStrategy finish");
             console.dir(res);
         });
+        if (networks == 'mainnet') {
+            await verify(["VaultProxy@" + vaults[token.symbol]['vault']], networks, "UNLICENSED");
+            if (token.symbol == 'HT') {
+                await verify(["SeedFinanceStrategyHT@" + vaults[token.symbol]['strategy'].address], networks, "UNLICENSED");
+            } else {
+                await verify(["SeedFinanceStrategy@" + vaults[token.symbol]['strategy'].address], networks, "UNLICENSED");
+            }
+        }
     }
     let vaultInfo = [];
     for (let i = 0; i < network.tokens.length; i ++) {

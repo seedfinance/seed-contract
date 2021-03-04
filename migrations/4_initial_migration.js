@@ -13,24 +13,24 @@ const Vault = artifacts.require('Vault');
 const VaultProxy = artifacts.require('VaultProxy');
 const AutoStake = artifacts.require('AutoStake');
 const SeedPool = artifacts.require('SeedPool');
-
+const { verify } = require("truffle-heco-verify/lib");
 /*
  * 部署Controller
  *
 */
-module.exports = async function(deployer) {
+module.exports = async function(deployer, networks) {
     //部署FeeRewardForward
     let feeRewardForward = null;
     let rewardPool = null;
     let autoStake = null;
     let controller = null;
     await deployer.deploy(FeeRewardForwarder, process.env.CONTRACT_STORAGE, process.env.CONTRACT_REWARDTOKEN, process.env.CONTRACT_REWARDTOKEN).then(function(res) {
-        feeRewardForward = res; 
-        return deployer.deploy(ExclusiveRewardPool, 
-            process.env.CONTRACT_REWARDTOKEN, 
-            process.env.CONTRACT_REWARDTOKEN, 
-            network.rewardPool.duration, 
-            feeRewardForward.address, 
+        feeRewardForward = res;
+        return deployer.deploy(ExclusiveRewardPool,
+            process.env.CONTRACT_REWARDTOKEN,
+            process.env.CONTRACT_REWARDTOKEN,
+            network.rewardPool.duration,
+            feeRewardForward.address,
             process.env.CONTRACT_STORAGE
         );
     }).then(function(res) {
@@ -63,6 +63,12 @@ module.exports = async function(deployer) {
     }).then(function(res) {
         console.dir("set controller finish");
     });
+    if (networks == 'mainnet') {
+        await verify(["FeeRewardForwarder@" + feeRewardForward.address], networks, "UNLICENSED");
+        await verify(["ExclusiveRewardPool@" + rewardPool.address], networks, "UNLICENSED");
+        await verify(["AutoStake@" + autoStake.address], networks, "UNLICENSED");
+        await verify(["Controller@" + controller.address], networks, "UNLICENSED");
+    }
     process.env.CONTRACT_FEEREWARDFORWARD = feeRewardForward.address;
     process.env.CONTRACT_REWARDPOOL = rewardPool.address;
     process.env.CONTRACT_AUTOSTAKE = autoStake.address;
