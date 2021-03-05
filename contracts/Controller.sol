@@ -99,7 +99,7 @@ contract Controller is IController, Governable {
       hardWorkers[_worker] = false;
     }
 
-    function hasVault(address _vault) external returns (bool) {
+    function hasVault(address _vault) external view returns (bool) {
       return vaults[_vault];
     }
 
