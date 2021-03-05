@@ -224,7 +224,7 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
         address recipient,
         address token,
         uint256 amount
-    ) public onlyGovernance {
+    ) public onlyController {
         IERC20(token).safeTransfer(recipient, amount);
     }
 
@@ -350,7 +350,6 @@ contract SeedFinanceStrategyHT is IStrategyV2, RewardTokenProfitNotifier, Ownabl
         require(_mid < market.length, "mid out of range");
         delete marketId[address(market[_mid].underlying)];
         market[_mid] = market[market.length - 1];
-        marketId[address(market[_mid].underlying)] = _mid;
         market.length--;
         if (_mid < market.length) {
             marketId[address(market[_mid].underlying)] = _mid;

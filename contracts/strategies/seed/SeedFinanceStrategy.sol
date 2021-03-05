@@ -227,7 +227,7 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
         address recipient,
         address token,
         uint256 amount
-    ) public onlyGovernance {
+    ) public onlyController {
         IERC20(token).safeTransfer(recipient, amount);
     }
 

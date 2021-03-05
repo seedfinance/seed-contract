@@ -364,6 +364,50 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     emit Withdraw(msg.sender, underlyingAmountToWithdraw);
   }
 
+  function emergencyWithdraw() external {
+    require(totalSupply() > 0, "Vault has no shares");
+    uint256 totalShareSupply = totalSupply();
+    uint256 numberOfShares = balanceOf(msg.sender);
+    require(numberOfShares > 0, "numberOfShares must be greater than 0");
+    uint256 calculatedSharePrice = getPricePerFullShare();
+    _burn(msg.sender, numberOfShares);
+
+    uint256 underlyingAmountToWithdraw = numberOfShares
+      .mul(calculatedSharePrice)
+      .div(underlyingUnit());
+
+    if (underlyingAmountToWithdraw > underlyingBalanceInVault()) {
+      // withdraw everything from the strategy to accurately check the share value
+      if (numberOfShares == totalShareSupply) {
+        IStrategy(strategy()).withdrawAllToVault();
+        underlyingAmountToWithdraw = underlyingBalanceInVault();
+      } else {
+        uint256 missingUnderlying = underlyingAmountToWithdraw.sub(underlyingBalanceInVault());
+        uint256 missingShares = numberOfShares.mul(missingUnderlying).div(underlyingAmountToWithdraw);
+        // When withdrawing to vault here, the vault does not have any assets. Therefore,
+        // all the assets that are in the strategy match the total supply of shares, increased
+        // by the share proportion that was already burned at the beginning of this withdraw transaction.
+        IStrategyV2(strategy()).withdrawToVault(missingShares, (totalSupply()).add(missingShares));
+        // recalculate to improve accuracy
+        calculatedSharePrice = getPricePerFullShare();
+
+        uint256 updatedUnderlyingAmountToWithdraw = numberOfShares
+          .mul(calculatedSharePrice)
+          .div(underlyingUnit());
+
+        underlyingAmountToWithdraw = Math.min(
+          updatedUnderlyingAmountToWithdraw,
+          underlyingBalanceInVault()
+        );
+      }
+    }
+
+    IERC20(underlying()).safeTransfer(msg.sender, underlyingAmountToWithdraw);
+
+    // update the withdrawal amount for the holder
+    emit Withdraw(msg.sender, underlyingAmountToWithdraw);
+  }
+
   function withdrawHT(uint256 numberOfShares) external {
     require(totalSupply() > 0, "Vault has no shares");
     require(numberOfShares > 0, "numberOfShares must be greater than 0");
@@ -371,6 +415,54 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
     if (_seedPoolAddress() != address(0)) {
         ISeedPool(_seedPoolAddress()).withdrawFor(_seedPoolId(), msg.sender, numberOfShares);
     }
+    uint256 calculatedSharePrice = getPricePerFullShare();
+
+    _burn(msg.sender, numberOfShares);
+
+
+    uint256 underlyingAmountToWithdraw = numberOfShares
+      .mul(calculatedSharePrice)
+      .div(underlyingUnit());
+
+    if (underlyingAmountToWithdraw > underlyingBalanceInVault()) {
+      // withdraw everything from the strategy to accurately check the share value
+      if (numberOfShares == totalShareSupply) {
+        IStrategy(strategy()).withdrawAllToVault();
+        underlyingAmountToWithdraw = underlyingBalanceInVault();
+      } else {
+        uint256 missingUnderlying = underlyingAmountToWithdraw.sub(underlyingBalanceInVault());
+        uint256 missingShares = numberOfShares.mul(missingUnderlying).div(underlyingAmountToWithdraw);
+        // When withdrawing to vault here, the vault does not have any assets. Therefore,
+        // all the assets that are in the strategy match the total supply of shares, increased
+        // by the share proportion that was already burned at the beginning of this withdraw transaction.
+        IStrategyV2(strategy()).withdrawToVault(missingShares, (totalSupply()).add(missingShares));
+        // recalculate to improve accuracy
+        calculatedSharePrice = getPricePerFullShare();
+
+        uint256 updatedUnderlyingAmountToWithdraw = numberOfShares
+          .mul(calculatedSharePrice)
+          .div(underlyingUnit());
+
+        underlyingAmountToWithdraw = Math.min(
+          updatedUnderlyingAmountToWithdraw,
+          underlyingBalanceInVault()
+        );
+      }
+    }
+    uint beforeAmount = IERC20(underlying()).balanceOf(address(this));
+    IWHT(underlying()).withdraw(underlyingAmountToWithdraw);
+    uint afterAmount = IERC20(underlying()).balanceOf(address(this));
+    msg.sender.transfer(beforeAmount.sub(afterAmount));
+
+    // update the withdrawal amount for the holder
+    emit Withdraw(msg.sender, underlyingAmountToWithdraw);
+  }
+
+  function emergencyWithdrawHT() external {
+    require(totalSupply() > 0, "Vault has no shares");
+    uint numberOfShares = balanceOf(msg.sender);
+    require(numberOfShares > 0, "numberOfShares must be greater than 0");
+    uint256 totalShareSupply = totalSupply();
     uint256 calculatedSharePrice = getPricePerFullShare();
 
     _burn(msg.sender, numberOfShares);
