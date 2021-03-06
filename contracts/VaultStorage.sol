@@ -19,6 +19,7 @@ contract VaultStorage is Initializable {
   bytes32 internal constant _WITHDRAW_BEFORE_REINVESTING_SLOT = 0x4215fbb95dc0890d3e1660fb9089350f2d3f350c0a756934874cae6febf42a79;
   bytes32 internal constant _SEED_POOL_ADDRESS_SLOT = 0xe6c3a0c4f4759de49e66aabc16297148917b8eb1e9e439560594ca0bf9eef916;
   bytes32 internal constant _SEED_POOL_ID_SLOT = 0x7798d9eaf8097cab5eab9cb3ef59b9a697144fd6db137bc0282ee9ef317e2c84;
+  bytes32 internal constant _SEED_POOL_ID_SETTED_SLOT = 0x50e466efcacb56f5975ee6f1375195fdcf2a8044193f2ea0daf906567bbb2187;
 
   constructor() public {
     assert(_STRATEGY_SLOT == bytes32(uint256(keccak256("eip1967.vaultStorage.strategy")) - 1));
@@ -36,6 +37,7 @@ contract VaultStorage is Initializable {
     assert(_WITHDRAW_BEFORE_REINVESTING_SLOT == bytes32(uint256(keccak256("eip1967.vaultStorage.withdrawBeforeReinvesting")) - 1));
     assert(_SEED_POOL_ADDRESS_SLOT == bytes32(uint256(keccak256("eip1967.vaultStorage.seedPoolAddress")) - 1));
     assert(_SEED_POOL_ID_SLOT == bytes32(uint256(keccak256("eip1967.vaultStorage.seedPoolId")) - 1));
+    assert(_SEED_POOL_ID_SETTED_SLOT == bytes32(uint256(keccak256("eip1967.vaultStorage.seedPoolIdSetted")) - 1));
   }
 
   function initialize(
@@ -72,6 +74,14 @@ contract VaultStorage is Initializable {
 
   function _seedPoolId() internal view returns (uint256) {
     return getUint256(_SEED_POOL_ID_SLOT);
+  }
+
+  function _setSeedPoolIdSetted(bool _value) internal {
+    setBoolean(_SEED_POOL_ID_SETTED_SLOT, _value);
+  }
+
+  function _seedPoolIdSetted() internal view returns (bool) {
+    return getBoolean(_SEED_POOL_ID_SETTED_SLOT);
   }
 
   function _setStrategy(address _address) internal {

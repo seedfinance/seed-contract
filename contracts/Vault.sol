@@ -214,11 +214,14 @@ contract Vault is ERC20, ERC20Detailed, IVault, IUpgradeSource, ControllableInit
   }
 
   function setSeedPoolAddress(address _seedPool) public onlyControllerOrGovernance {
+    require(seedPoolAddress() == address(0), "seedPool address already modified");
     _setSeedPoolAddress(_seedPool);
   }
 
   function setSeedPoolId(uint256 _seedId) public onlyControllerOrGovernance {
+    require(!_seedPoolIdSetted(), "seedPoolId already modified");
     _setSeedPoolId(_seedId);
+    _setSeedPoolIdSetted(true);
   }
 
   function setStrategy(address _strategy) public onlyControllerOrGovernance {

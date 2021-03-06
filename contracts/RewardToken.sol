@@ -50,7 +50,7 @@ contract RewardToken is ERC20, ERC20Detailed, ERC20Capped, Governable {
         uint256 newBalance
     );
 
-    constructor(address _storage)
+    constructor(address _storage, address[] memory minters)
         public
         ERC20Detailed("SEED Reward Token", "SEED", 18)
         ERC20Capped(HARD_CAP)
@@ -59,14 +59,10 @@ contract RewardToken is ERC20, ERC20Detailed, ERC20Capped, Governable {
         // msg.sender should not be a minter
         renounceMinter();
         // governance will become the only minter
-        _addMinter(governance());
-    }
+        for (uint i = 0; i < minters.length; i ++) {
+            _addMinter(minters[i]);
+        }
 
-    /**
-     * Overrides adding new minters so that only governance can authorized them.
-     */
-    function addMinter(address _minter) public onlyGovernance {
-        super.addMinter(_minter);
     }
 
     function mint(address _to, uint256 _amount)

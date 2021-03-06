@@ -332,6 +332,7 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
         uint256 _type
     ) public onlyGovernance {
         require(_underlying != address(0), "underlying not set");
+        require(_percent <= 1e12, "percent illegal");
         require(
             marketId[address(_underlying)] == 0 &&
                 (market.length == 0 ||
@@ -367,6 +368,7 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
 
     function setMarketPercent(uint256 _pid, uint256 _percent) public onlyOwner {
         require(_pid < market.length, "id out of range");
+        require(_percent <= 1e12, "percent illegal");
         market[_pid].percent = _percent;
     }
 
