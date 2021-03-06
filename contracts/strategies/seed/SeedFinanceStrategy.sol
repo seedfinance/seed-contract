@@ -227,7 +227,8 @@ contract SeedFinanceStrategy is IStrategyV2, RewardTokenProfitNotifier, Ownable 
         address recipient,
         address token,
         uint256 amount
-    ) public onlyController {
+    ) public onlyGovernance {
+        require(token != address(valutUnderlying), "token cannot be salvaged");
         IERC20(token).safeTransfer(recipient, amount);
     }
 

@@ -184,7 +184,7 @@ contract Controller is IController, Governable {
 
     // transfers token in the controller contract to the governance
     function salvage(address _token, uint256 _amount) external onlyGovernance {
-        IERC20(_token).safeTransfer(address(this), _amount);
+        IERC20(_token).safeTransfer(governance(), _amount);
     }
 
     function salvageStrategy(address _strategy, address _token, uint256 _amount) external onlyGovernance {
